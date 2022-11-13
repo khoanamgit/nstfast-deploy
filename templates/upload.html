@@ -1,0 +1,427 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--	<meta charset="UTF-8">-->
+<!--	<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--	<title>Upload</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--	<h1>Upload your image(s) and select a style</h1>-->
+<!--	<form class="upload-form" id="upload-form" action="{{url_for('upload')}}" method= "POST" enctype="multipart/form-data">-->
+<!--		<input type="file" name="file" accept="image/*" multiple>-->
+<!--		<input type="submit" value="Upload">-->
+<!--		<br><br>-->
+
+<!--		<div>-->
+<!--			<label for="style">Choose an image style:</label>-->
+<!--			<select id="style" name="style">-->
+<!--				&lt;!&ndash; Torch pretrained models from https://github.com/ProGamerGov/Torch-Models&ndash;&gt;-->
+<!--				&lt;!&ndash; And also "https://cs.stanford.edu/people/jcjohns/fast-neural-style/models//instance_norm/candy.t7"&ndash;&gt;-->
+<!--&lt;!&ndash;				<option value="Fire_Style_22000_Iterations.t7">Fire Style</option>&ndash;&gt;-->
+<!--&lt;!&ndash;				<option value="gold_black_2700.t7">Gold Black Style</option>&ndash;&gt;-->
+<!--&lt;!&ndash;				<option value="pink_style_1800.t7">Pink Style</option>&ndash;&gt;-->
+<!--&lt;!&ndash;				<option value="triangle_style_1000.t7">Triangle Style</option>&ndash;&gt;-->
+<!--&lt;!&ndash;				<option value="flame_style_4500.t7">Flame Style</option>&ndash;&gt;-->
+<!--&lt;!&ndash;				<option value="landscape_style_11600.t7">Landscape Style</option>&ndash;&gt;-->
+<!--&lt;!&ndash;				<option value="rain_style_iter_4000.t7">Rain Style</option>&ndash;&gt;-->
+<!--&lt;!&ndash;				<option value="starry_night_2500.t7">Starry Night Style</option>&ndash;&gt;-->
+<!--&lt;!&ndash;				<option value="mosaic.t7">Mosaic Style</option>&ndash;&gt;-->
+<!--&lt;!&ndash;				<option value="the_scream.t7">The Scream Style</option>&ndash;&gt;-->
+<!--&lt;!&ndash;				<option value="the_wave.t7">The Wave Style</option>&ndash;&gt;-->
+<!--				<option value="candy.pth">Candy</option>-->
+<!--				<option value="mosaic.pth">Mosaic</option>-->
+<!--				<option value="rain_princess.pth">Rain</option>-->
+<!--				<option value="udnie.pth">udnie</option>-->
+<!--	  		</select>-->
+<!--		</div>-->
+<!--	</form>-->
+<!--</body>-->
+
+<!--</html>-->
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/font/fontawesome-free-6.1.1-web/fontawesome-free-6.1.1-web/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <title>Neutral Tranfer Style</title>
+</head>
+<body>
+    <div class="app">
+        <div class="sidebar">
+            <h1>Neutral Transfer Style</h1>
+            <ul class="side_list">
+                <li class="side_item">
+                    <div class="wraper">
+                        <div class="image">
+                            <img src=" " alt="" id="display_image">
+                        </div>
+                        <div class="content">
+                            <div class="icon">
+                                <i class="fa-solid fa-image"></i>
+                            </div>
+                            <div class="text">No file chosen!</div>
+                        </div>
+                    </div>
+                    <!-- <input class="default-btn" type="file" id="file_img" hidden> -->
+                    <!-- <button class="btn" id="custom-btn">Chose file</button> -->
+                </li>
+                <!-- <li class="side_item">
+                    <label for="cars">Choose style image:</label>
+                    <select class="style-content" name="cars" id="cars" form="carform">
+                        <option value="volvo">Oil painting of flower</option>
+                        <option value="saab">Neon light</option>
+                        <option value="opel">Fire</option>
+                        <option value="audi">Green crystal</option>
+                    </select>
+                </li> -->
+                <!-- <li class="side_item">
+                    <button class="btn open_webcam">Open Webcam</button>
+                </li>
+                <li class="side_item">
+                    <div class="camera"></div>
+                    <div class="wraper">
+                        <div class="image" id="camera">
+                            <img src=" " alt="">
+                        </div>
+                    </div>
+                    <button class="btn take_pic">Take Pickture</button>
+                </li> -->
+                <li class="side_item">
+                    <form class="upload-form" id="upload-form" action="{{url_for('upload')}}" method= "POST" enctype="multipart/form-data">
+                        <div class="form-item">
+                            <input class="default-btn" type="file" name="file" accept="image/*"  hidden>
+                            <button class="btn" id="custom-btn">Chose file</button>
+                        </div>
+
+
+                        <!-- <br><br> -->
+
+                        <div class="form-item">
+                            <label for="style">Choose an image style:</label>
+                            <select class="style" id="style" name="style">
+                                <!-- Torch pretrained models from https://github.com/ProGamerGov/Torch-Models-->
+                                <!-- And also "https://cs.stanford.edu/people/jcjohns/fast-neural-style/models//instance_norm/candy.t7"-->
+                <!--				<option value="Fire_Style_22000_Iterations.t7">Fire Style</option>-->
+                <!--				<option value="gold_black_2700.t7">Gold Black Style</option>-->
+                <!--				<option value="pink_style_1800.t7">Pink Style</option>-->
+                <!--				<option value="triangle_style_1000.t7">Triangle Style</option>-->
+                <!--				<option value="flame_style_4500.t7">Flame Style</option>-->
+                <!--				<option value="landscape_style_11600.t7">Landscape Style</option>-->
+                <!--				<option value="rain_style_iter_4000.t7">Rain Style</option>-->
+                <!--				<option value="starry_night_2500.t7">Starry Night Style</option>-->
+                <!--				<option value="mosaic.t7">Mosaic Style</option>-->
+                <!--				<option value="the_scream.t7">The Scream Style</option>-->
+                <!--				<option value="the_wave.t7">The Wave Style</option>-->
+                                <option value="candy.pth">Candy</option>
+                                <option value="mosaic.pth">Mosaic</option>
+                                <option value="rain_princess.pth">Rain</option>
+                                <option value="udnie.pth">udnie</option>
+                              </select>
+                        </div>
+
+                        <div class="form-item">
+                            <input class="btn btn-transfer" type="submit" value="Transfer">
+                        </div>
+                    </form>
+                </li>
+                <li class="side_item">
+                    <button class="btn open_webcam">Open Webcam</button>
+                    <button class="btn take_pic">Take Pickture</button>
+                </li>
+            </ul>
+        </div>
+        <div class="main">
+<!--            <div class="camera">-->
+<!--                <div class="image-camera" id="camera">-->
+<!--                    <img class="img-camera" src=" " alt="">-->
+<!--                </div>-->
+<!--            </div>-->
+            {% for image_name in image_names %}
+                <h4>Image Source</h4>
+                <div class="image-show">
+                    <img class="img-source" src="{{url_for('send_original_image', filename=image_name)}}" alt=" ">
+                </div>
+                <h4>Image Transfer Style</h4>
+                <div class="image-show">
+                    <img class="img-result" src="{{url_for('send_processed_image', filename=image_name, selected_style=selected_style)}}" alt=" ">
+                </div>
+            {% endfor %}
+                <div class="loader-wrapper">
+                    <span class="loader"><span class="loader-inner"></span></span>
+                </div>
+
+<!--            {% for image_name in image_names %}-->
+<!--                <div>-->
+<!--                    <img src="{{url_for('send_processed_image', filename=image_name, selected_style=selected_style)}}">-->
+<!--                    <img src="{{url_for('send_original_image', filename=image_name)}}">-->
+<!--                </div>-->
+<!--            {% endfor %}-->
+        </div>
+    </div>
+
+</body>
+<style>
+	*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.sidebar{
+    position: fixed;
+    left: 0;
+    width: 350px;
+    height: 100%;
+    background-color: #042331;
+}
+
+.sidebar h1 {
+    font-size: 30px;
+    text-align: center;
+    color: #fff;
+    line-height: 70px;
+    background-color: #063146;
+}
+
+.sidebar ul{
+    display: block;
+    height: 100%;
+    width: 100%;
+    line-height: 65px;
+    color: #fff;
+}
+
+.side_item{
+    padding-top: 20px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.icon{
+    padding-right: 10px;
+}
+
+.wraper{
+    position: relative;
+    height: 200px;
+    width: 100%;
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image{
+    position: absolute;
+    height: 100%;
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.btn{
+    display: block;
+    margin-top: 20px;
+    width: 100%;
+    height: 40px;
+    border-radius: 20px;
+    background-color: #063146;
+    border: 1px solid #fff;
+    color: #fff;
+    cursor: pointer;
+}
+
+
+.style-content{
+    height: 30px;
+    cursor: pointer;
+    /* width: 100%; */
+    border-radius: 5px;
+    text-align: center;
+}
+
+
+.style{
+    width: 176px;
+    height: 25px;
+    border-radius: 5px;
+}
+
+.form-item:nth-child(2){
+    padding: 5px 0;
+}
+
+.main{
+    padding-left: 350px;
+    text-align:center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+
+.image-show{
+    width: 60%;
+    height: 100%;
+    border: 1px solid #ccc;
+    display: inline-block;
+    /* text-align: justify; */
+    border-radius: 10px;
+}
+
+.image-show img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.image-show:nth-child(1){
+    margin-bottom: 40px;
+}
+
+.image-camera{
+    display: inline-block;
+}
+
+.image-camera{
+    width: 300px;
+    height: 150px;
+    border: 1px solid #ccc;
+
+}
+
+.loader-wrapper{
+    width: calc(100% - 350px);
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #243f3f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loader{
+    display: inline-block;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #fff;
+    animation: loader 2s infinite ease;
+}
+
+.loader-inner{
+    vertical-align: top;
+    display: inline-block;
+    width: 100%;
+    background-color: #042331;
+    animation: loader-inner 2s infinite ease-in;
+}
+
+@keyframes loader{
+    0% {transform: rotate(0deg);}
+    25% {transform: rotate(180deg);}
+    50% {transform: rotate(180deg);}
+    75% {transform: rotate(360deg);}
+    100% {transform: rotate(360deg);}
+
+}
+
+@keyframes loader-inner{
+    0% {height: 0%;}
+    25% {height: 0%;}
+    50% {height: 100%;}
+    75% {height: 100%;}
+    100% {height: 0%;}
+
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js" integrity="sha512-dQIiHSl2hr3NWKKLycPndtpbh5iaHLo6MwrXm7F0FM5e+kL2U16oE9uIwPHUl6fQBeCthiEuV/rzP3MiAB8Vfw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+const defaultBtn = document.querySelector('.default-btn')
+const choosenBtn = document.querySelector('#custom-btn')
+const img = document.querySelector('img')
+choosenBtn.addEventListener('click', function(e){
+    e.preventDefault()
+    defaultBtn.click()
+})
+
+defaultBtn.addEventListener('change', function(e){
+    e.preventDefault()
+    const file = this.files[0]
+    console.log(file)
+    if (file){
+        const reader = new FileReader()
+        reader.onload = function(){
+            const result = reader.result
+            console.log(result)
+            img.src = result
+        }
+        reader.readAsDataURL(file)
+    }
+})
+
+//Loading Page
+$(window).on('load', function(){
+    $('.loader-wrapper').delay(6000).fadeOut('complete')
+})
+const btnTransfer = document.querySelector('.btn-transfer')
+const loaderWrapper = document.querySelector('.loader-wrapper')
+btnTransfer.addEventListener('click', function(){
+    loaderWrapper.delay(4000).fadeOut('slow')
+})
+
+ //Test take picture from webcam
+ Webcam.set({
+    width: 350,
+    height: 350,
+    image_format: 'jpeg',
+    jpeg_quality: 90
+})
+const takePic = document.querySelector('.take_pic')
+const openWebcam = document.querySelector('.open_webcam')
+
+openWebcam.addEventListener('click', function(){
+    Webcam.attach('#camera')
+})
+
+takePic.addEventListener('click', function(){
+    Webcam.snap(function(data_uri){
+        img.src = data_uri
+        Webcam.reset('#camera')
+    })
+})
+
+
+</script>
